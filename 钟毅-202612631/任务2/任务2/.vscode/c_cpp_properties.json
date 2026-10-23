@@ -1,0 +1,29 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "NEUQ_STM32F407VET6",
+            "intelliSenseMode": "gcc-arm",
+            "cStandard": "c99",
+            "includePath": [
+                "${workspaceFolder}/user",
+                "${workspaceFolder}/code/NEUQ_lib",
+                "${workspaceFolder}/code/NEUQ_lib/NEUQ_lib_Driver",
+                "${workspaceFolder}/code/NEUQ_lib/NEUQ_lib_Debug",
+                "${workspaceFolder}/code/NEUQ_lib/NEUQ_lib_Device",
+                "${workspaceFolder}/code/NEUQ_lib/NEUQ_lib_APP",
+                "${workspaceFolder}/code/HAL_lib/Core/Inc",
+                "${workspaceFolder}/code/HAL_lib/STM32F4xx_HAL_Driver/Inc",
+                "${workspaceFolder}/code/HAL_lib/STM32F4xx_HAL_Driver/Inc/Legacy",
+                "${default}"
+            ],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32F407xx"
+            ],
+            "forcedInclude": [
+                "${workspaceFolder}/code/HAL_lib/Core/Inc/stm32f4xx_hal.h"
+            ]
+        }
+    ]
+}

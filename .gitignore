@@ -1,0 +1,47 @@
+# C / STM32 build outputs
+*.o
+*.obj
+*.d
+*.dep
+*.axf
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+*.crf
+*.lnp
+Objects/
+Listings/
+build/
+cmake-build-*/
+
+# Keil personal workspace state
+*.uvguix.*
+
+# Editor caches, temporary files and backups
+**/.vscode/ipch/
+*.VC.db
+*.VC.VC.opendb
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+
+# Python bytecode and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local environment settings and credentials
+.env
+.env.*
+!.env.example
+!.env.template

@@ -1,0 +1,63 @@
+﻿#include "NEUQ_lib_include.h"
+#include "NEUQ_Key.h"
+
+typedef struct
+{
+    GPIO_Ports_ENUM pin;
+    uint16_t press_cnt;
+    KEY_ACT_ENUM event;
+} KEY_Typedef;
+
+static KEY_Typedef key_table[KEY_NUM] = {
+    {KEY_UP, 0, KEY_ACT_NONE},
+    {KEY_DOWN, 0, KEY_ACT_NONE},
+    {KEY_FORWARD, 0, KEY_ACT_NONE},
+    {KEY_BACK, 0, KEY_ACT_NONE}
+};
+
+void NEUQ_Key_Init(void)
+{
+   for(uint8_t i = 0; i < KEY_NUM; i++)
+   {
+       NEUQ_GPIO_init(key_table[i].pin, GPIO_Mode_Input_PullUp,GPIO_High);
+   }
+}
+
+void NEUQ_Key_Scan(void)
+{
+    for(uint8_t i = 0; i < KEY_NUM; i++)
+    {
+        KEY_Typedef *key = &key_table[i];
+        if(NEUQ_GPIO_read(key->pin) == GPIO_Low)
+        {
+            key->press_cnt++;
+            if(key->press_cnt >= KEY_LONG_CNT)
+            {
+                key->event = KEY_ACT_LONG;
+            }
+        }
+        else
+        {
+            if(key->press_cnt >= KEY_SHORT_CNT && key->press_cnt < KEY_LONG_CNT)
+            {
+                key->event = KEY_ACT_SHORT;
+            }
+            key->press_cnt = 0;
+        }
+    }
+}
+
+KEY_EVENT_ENUM NEUQ_Key_GetEvent(void)
+{
+    KEY_EVENT_ENUM KeyEvent = KEY_EVENT_NONE;
+    for(uint8_t i = 0; i < KEY_NUM; i++)
+    {
+        if(key_table[i].event != KEY_ACT_NONE)
+        {
+            KeyEvent = (key_table[i].event == KEY_ACT_LONG) ? ((KEY_EVENT_ENUM)( i + 5)) : ((KEY_EVENT_ENUM)(i + 1));
+            key_table[i].event = KEY_ACT_NONE;
+            break;
+        }
+    }
+    return KeyEvent;
+}

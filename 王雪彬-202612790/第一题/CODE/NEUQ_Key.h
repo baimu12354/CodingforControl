@@ -1,0 +1,40 @@
+#ifndef NEUQ_KEY_H_
+#define NEUQ_KEY_H_
+
+#include"NEUQ_lib_include.h"
+
+#define KEY_UP      PE9
+#define KEY_DOWN    PE8
+#define KEY_FORWARD PE7
+#define KEY_BACK    PE10
+
+#define KEY_NUM   4
+#define KEY_SCAN_PERIOD_MS  1   //按键检测周期1ms（扫描在1ms中断里调用）
+#define KEY_SHORT_CNT  20  //短按20ms
+#define KEY_LONG_CNT   500 //长按500ms
+
+typedef enum{
+    KEY_ACT_NONE = 0,   //无事件
+    KEY_ACT_SHORT,      //短按
+    KEY_ACT_LONG,       //长按
+} KEY_ACT_ENUM;
+
+typedef enum{
+    KEY_EVENT_NONE = 0,  //无事件
+    KEY_UP_SHORT,
+    KEY_DOWN_SHORT,
+    KEY_FORWARD_SHORT,
+    KEY_BACK_SHORT,
+    KEY_UP_LONG,
+    KEY_DOWN_LONG,
+    KEY_FORWARD_LONG,
+    KEY_BACK_LONG,
+} KEY_EVENT_ENUM;
+
+
+void NEUQ_KEY_Init(void);
+void NEUQ_KEY_Scan(void);
+KEY_EVENT_ENUM NEUQ_Key_EventGet(void);
+
+
+#endif

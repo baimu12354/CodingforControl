@@ -1,0 +1,95 @@
+/*********************************************************************************************************************
+* NEUQ Library 即（东北大学秦皇岛分校 开源库）是一个基于官方 HAL 库的第三方开源库
+* Copyright (c) 2025 NEUQ SmartCar Lab
+*
+* 本文件是 NEUQ Library 的一部分
+*
+* NEUQ Library 是免费软件
+* 您可以根据自由软件基金会发布的 GPL（GNU General Public License，即 GNU通用公共许可证）的条款
+* 即 GPL 的第3版（即 GPL3.0）或（您选择的）任何后来的版本，重新发布和/或修改它
+*
+* 本开源库的发布是希望它能发挥作用，但并未对其作任何的保证
+* 甚至没有隐含的适销性或适合特定用途的保证
+* 更多细节请参见 GPL
+*
+* 您应该在收到本开源库的同时收到一份 GPL 的副本
+* 如果没有，请参阅<https://www.gnu.org/licenses/>
+*
+* 额外注明：
+* 本开源库使用 GPL3.0 开源许可证协议 
+* 欢迎各位使用并传播本程序 但修改内容时必须保留作者的版权声明（即本声明）
+*
+* 文件名称          NEUQ_Main
+* 组织名称          东北大学秦皇岛分校 智能车实验室
+* 版本信息          查看 libraries/doc 文件夹内 version 文件 版本说明
+* 开发环境          MDK-ARM v5.38
+* 适用平台          STM32F407VE
+*
+* 修改记录
+* 日期              作者                备注
+* 2025-09-05        张瑞        first version
+********************************************************************************************************************/
+#include "../Library/NEUQ_lib/NEUQ_lib_include.h"
+#include "Imu_State.h"
+
+AppConfig g_config;
+static uint8_t g_flash_ok = 0;
+
+static uint32_t App_ConfigChecksum(const AppConfig *config)
+{
+    return config->magic ^ (uint32_t)config->alpha_milli ^
+           ((uint32_t)config->send_axis << 16) ^ 0xA55A39C3UL;
+}
+
+
+
+
+
+
+
+//Flash的存储功能
+//？
+//？
+//？
+
+void Imu_Settings_Load(void)
+{
+    AppConfig loaded;
+
+    g_config.magic = APP_CONFIG_MAGIC;
+    g_config.alpha_milli = 200;   /* alpha=0.20 */
+    g_config.send_axis = 0;
+    g_config.reserved = 0;
+    g_config.checksum = App_ConfigChecksum(&g_config);
+
+    g_flash_ok = NEUQ_Flash_init();
+    if (g_flash_ok == NEUQ_FLASH_OK &&
+        NEUQ_Flash_read_sector(APP_FLASH_SECTOR, (uint8_t *)&loaded,
+                               (uint16_t)sizeof(loaded)) == NEUQ_FLASH_OK &&
+        loaded.magic == APP_CONFIG_MAGIC &&
+        loaded.alpha_milli >= 50U && loaded.alpha_milli <= 950U &&
+        loaded.send_axis < 6U &&
+        loaded.checksum == App_ConfigChecksum(&loaded))
+    {
+        g_config = loaded;
+    }
+}
+
+uint8_t Imu_Settings_Save(void)
+{
+    if (g_flash_ok != NEUQ_FLASH_OK)
+    {
+        return 0;
+    }
+    g_config.magic = APP_CONFIG_MAGIC;
+    g_config.reserved = 0;
+    g_config.checksum = App_ConfigChecksum(&g_config);
+    return NEUQ_Flash_write_sector(APP_FLASH_SECTOR,
+                                   (const uint8_t *)&g_config,
+                                   (uint16_t)sizeof(g_config));
+}
+
+/* 返回本次新产生的按下事件位图；长按不会重复触发。 */
+//该行在判断按键是否真正的按下，并进行按键消抖，长按不算
+
+
