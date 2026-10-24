@@ -24,9 +24,9 @@ static void Sample_Task(void) {
     raw_axis[AX_GY] = MPU6050_gyro_transition(mpu6050_gyro_y);
     raw_axis[AX_GZ] = MPU6050_gyro_transition(mpu6050_gyro_z);
     Bias_Track(); Filter_Update();
+    Attitude_Update();
     if (param.send_enable && param.send_axis < AX_NUM)
         VOFA_SendFrame(raw_axis[param.send_axis], filt_axis[param.send_axis]);
-    if (page == PAGE_ATTITUDE) Attitude_Update();
 }
 
 /*----------------------------------------------------------------

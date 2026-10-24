@@ -3,7 +3,7 @@
 #include "motor_hw.h"   /* app_common.h → 库 + config.h */
 
 /* 共享变量定义(声明见 app_common.h) */
-volatile int32_t pwm_duty = 0;          // 当前 PWM 占空比(0~PWM_MAX), 上报调试用
+volatile int32_t pwm_duty = 0;          // 当前 PWM 占空比(±PWM_MAX, 带符号), 上报调试用
 volatile float   supply_voltage = 0.0f; // 供电电压(V), ADC 采样, 上报观察
 
 static uint32_t last_volt = 0;
@@ -34,6 +34,8 @@ void Motor_HW_SetPwm(float out)
     if (duty > PWM_MAX)  duty = PWM_MAX;
     if (duty < -PWM_MAX) duty = -PWM_MAX;
 
+    pwm_duty = duty;                                  // 记录带符号占空比(±PWM_MAX), 供上报观察
+
     if (duty > 0) {                    // 正转
         NEUQ_GPIO_write(MOTOR_DIR, GPIO_High);
     } else if (duty < 0) {             // 反转
@@ -41,7 +43,6 @@ void Motor_HW_SetPwm(float out)
         duty = -duty;
     }
     // duty==0 时仅占空比清零(方向不变)，电机停止
-    pwm_duty = duty;                                  // 记录当前占空比, 供上报观察
     NEUQ_PWM_set_duty(MOTOR_PWM_PORT, (uint32_t)duty);
 }
 
@@ -55,9 +56,9 @@ int32_t Motor_HW_ReadEncoder(void)
 void Motor_HW_SampleVoltage(void)
 {
     // 100ms 一次, ADC 均值滤波; 不在 1ms 中断里做, 避免阻塞控制
-    if (HAL_GetTick() - last_volt >= VOLT_SAMPLE_MS)
+    if (time_tick - last_volt >= VOLT_SAMPLE_MS)
     {
-        last_volt = HAL_GetTick();
+        last_volt = time_tick;
         supply_voltage = (float)adc_mean_filter_convert(VOLT_ADC_CH, 8)
                          * VOLT_VREF / 4096.0f * VOLT_DIV_RATIO;
     }

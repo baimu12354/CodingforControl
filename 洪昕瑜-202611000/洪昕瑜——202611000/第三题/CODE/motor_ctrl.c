@@ -12,6 +12,7 @@ volatile uint8_t running = 0;
 volatile float   target_rpm = 0.0f;
 volatile float   actual_rpm = 0.0f;
 PID_t            pid;
+volatile uint32_t time_tick = 0;        // 1ms 时基, 供上报/采样等节流(在 1ms 中断里累加)
 
 /* 私有状态 */
 static volatile float target_ref = 0.0f;    // 斜坡整形后的目标
@@ -36,6 +37,8 @@ void MotorCtrl_Init(void)
 /* 1ms 控制周期: 测速 → 斜坡整形 → PID → PWM */
 void MotorCtrl_PeriodCallback(void)
 {
+    time_tick++;                    // 0) 1ms 时基累加
+
     // 1) 编码器计数差入环形缓冲
     Speed_Accum1ms();
 

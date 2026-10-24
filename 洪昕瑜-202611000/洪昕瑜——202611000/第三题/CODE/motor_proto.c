@@ -44,8 +44,12 @@ static void Proto_Dispatch(uint8_t cmd, const uint8_t *data, uint8_t len)
             {
                 target_rpm = Bytes_To_Float(data);
                 // 按速度自动启停: 非零→启动, 拖到0→停止
-                if (target_rpm == 0.0f) { running = 0; Motor_HW_SetPwm(0); PID_Reset(&pid); }
-                else if (!running)      { PID_Reset(&pid); running = 1; }   // 首次给非零速度时启动
+                if (target_rpm == 0.0f) { 
+                    running = 0; Motor_HW_SetPwm(0); PID_Reset(&pid); 
+                }
+                else if (!running)      {
+                     PID_Reset(&pid); running = 1;
+                }   // 首次给非零速度时启动
             }
             break;
         case CMD_KP: case CMD_KI: case CMD_KD:   /* Kp/Ki/Kd 单参数 */

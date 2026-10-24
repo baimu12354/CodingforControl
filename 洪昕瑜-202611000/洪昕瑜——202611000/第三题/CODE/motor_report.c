@@ -45,7 +45,7 @@ static void Report_Send(void)
     len += AppendField(buf + len, pid.Kp);
     len += AppendField(buf + len, pid.Ki);
     len += AppendField(buf + len, pid.Kd);
-    len += AppendField(buf + len, pwm_duty / 100.0f);   /* 占空比 0~100% (10000=满) */
+    len += AppendField(buf + len, pwm_duty / 100.0f);   /* 带符号占空比 ±100% (±10000=满) */
     len += Ftoa(buf + len, supply_voltage);
     buf[len++] = '\n';                                   /* 供电电压(V) */
 
@@ -55,7 +55,7 @@ static void Report_Send(void)
 /* 周期上报(内部按 REPORT_PERIOD_MS 节流) */
 void Report_Tick(void)
 {
-    uint32_t now = HAL_GetTick();
+    uint32_t now = time_tick;
     if (now - last_report >= REPORT_PERIOD_MS)
     {
         last_report = now;
